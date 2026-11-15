@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="トワと、今日も。" />
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
+    <meta name="app-latest" content="ePi1oFtf0Ss">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -499,5 +500,27 @@
         document.getElementById("close-howto-2").addEventListener("click", showMain);
       })();
     </script>
+<script>
+(function(){
+  var mine = (document.querySelector('meta[name="app-latest"]')||{}).content || "";
+  var lastCheck = 0;
+  function check(){
+    var now = Date.now();
+    if (now - lastCheck < 60000) return;
+    lastCheck = now;
+    fetch("version.json?ts=" + now, {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+      if (!d || !d.latest || d.latest === mine) return;
+      try {
+        if (sessionStorage.getItem("towaReloadedFor") === d.latest) return;
+        sessionStorage.setItem("towaReloadedFor", d.latest);
+      } catch(e) {}
+      location.reload();
+    }).catch(function(){});
+  }
+  window.addEventListener("pageshow", check);
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) check(); });
+  check();
+})();
+</script>
   </body>
 </html>
