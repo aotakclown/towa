@@ -10,6 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="xbf6uwmKSWg">
+    <meta name="app-build" content="1">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -496,16 +497,20 @@
 <script>
 (function(){
   var mine = (document.querySelector('meta[name="app-latest"]')||{}).content || "";
+  var myBuild = (document.querySelector('meta[name="app-build"]')||{}).content || "";
   var lastCheck = 0;
   function check(){
     var now = Date.now();
     if (now - lastCheck < 60000) return;
     lastCheck = now;
     fetch("version.json?ts=" + now, {cache: "no-store"}).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
-      if (!d || !d.latest || d.latest === mine) return;
+      if (!d || !d.latest) return;
+      var target = d.latest + "." + (d.build || "");
+      var current = mine + "." + myBuild;
+      if (target === current) return;
       try {
-        if (sessionStorage.getItem("towaReloadedFor") === d.latest) return;
-        sessionStorage.setItem("towaReloadedFor", d.latest);
+        if (sessionStorage.getItem("towaReloadedFor") === target) return;
+        sessionStorage.setItem("towaReloadedFor", target);
       } catch(e) {}
       location.reload();
     }).catch(function(){});
