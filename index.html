@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="43jVMBwjszw">
-    <meta name="app-build" content="2">
+    <meta name="app-build" content="3">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -143,6 +143,25 @@
       .lead strong { color: var(--ink); }
       /* リード文は文節の切れ目でのみ折り返し、1文字だけ次の行に落ちないようにする */
       .lead .ph { white-space: nowrap; }
+
+      /* ── 火曜日のお休みお知らせ ───────────── */
+      .tuesday-note {
+        margin-top: 28px;
+        background: var(--note-bg);
+        border: 1.5px solid var(--line);
+        border-radius: 18px;
+        padding: 22px 22px;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+      .tuesday-note p {
+        margin: 0;
+        font-weight: 700;
+        font-size: 17.5px;
+        line-height: 1.75;
+        color: var(--ink);
+      }
+      .tuesday-note + .latest { margin-top: 20px; }
 
       /* ── 最新動画 ─────────────────────────── */
       .latest { margin-top: 28px; }
@@ -327,6 +346,11 @@
           </div>
           <p class="lead"><span class="ph">26週2日、</span><span class="ph">859グラムで</span><span class="ph">生まれました。</span><br /><span class="ph">小さな小さな命が、</span><span class="ph">ゆっくりと元気に</span><span class="ph">成長していく姿を、</span><br /><span class="ph">見守ってください。</span></p>
         </header>
+
+        <!-- 火曜日のお休みお知らせ（火曜日だけ表示） -->
+        <div class="tuesday-note" id="tuesday-note" style="display:none" role="note">
+          <p>火曜日は面会ができない日なので、動画はお休みです。これまでの動画をたくさん見て、トワを応援してね。</p>
+        </div>
 
         <!-- 最新の動画 -->
         <div class="latest">
@@ -525,6 +549,17 @@
   window.addEventListener("pageshow", check);
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) check(); });
   check();
+})();
+</script>
+<script>
+(function(){
+  try {
+    var wd = new Intl.DateTimeFormat("ja-JP", {timeZone: "Asia/Tokyo", weekday: "short"}).format(new Date());
+    if (wd === "火") {
+      var el = document.getElementById("tuesday-note");
+      if (el) el.style.display = "";
+    }
+  } catch(e) {}
 })();
 </script>
   </body>
