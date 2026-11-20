@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="Nig14IZIMzo">
-    <meta name="app-build" content="21">
+    <meta name="app-build" content="22">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -653,9 +653,9 @@
           <div id="note-list">
             <!-- メイン画面には最新の1件だけを表示。過去分はノートページ（別ビュー）にあります -->
             <div class="note-entry">
-              <div class="note-date">11月16日 夜間面会</div>
-              <button class="note-photo-btn" type="button" aria-label="11月16日 夜間面会のノートを大きく見る">
-                <img data-notebook="2026-11-16-night" src="notebook/2026-11-16-night.jpg" alt="交換ノートのページ（11月16日 夜間面会）" width="960" height="1706" loading="lazy" />
+              <div class="note-date">11月18日 パパとママから</div>
+              <button class="note-photo-btn" type="button" aria-label="11月18日 パパとママからのノートを大きく見る">
+                <img data-notebook="2026-11-18" src="notebook/2026-11-18.jpg" alt="交換ノートのページ（11月18日 パパとママから）" width="960" height="1706" loading="lazy" />
               </button>
             </div>
           </div>
@@ -755,6 +755,13 @@
                 <img data-notebook="2026-11-16-night" src="notebook/2026-11-16-night.jpg" alt="交換ノートのページ（11月16日 夜間面会）" width="960" height="1706" loading="lazy" />
               </button>
             </div>
+
+            <div class="note-page">
+              <div class="note-date">11月18日 パパとママから</div>
+              <button class="note-photo-btn" type="button" aria-label="11月18日 パパとママからのノートを大きく見る">
+                <img data-notebook="2026-11-18" src="notebook/2026-11-18.jpg" alt="交換ノートのページ（11月18日 パパとママから）" width="960" height="1706" loading="lazy" />
+              </button>
+            </div>
           </div>
 
           <div class="pager-fade left" aria-hidden="true"></div>
@@ -764,7 +771,7 @@
           <button class="pager-nav next" type="button" id="pager-next" aria-label="次のページへ">›</button>
           </div>
 
-          <p class="note-counter" id="note-counter" aria-live="polite">1 / 4</p>
+          <p class="note-counter" id="note-counter" aria-live="polite">1 / 5</p>
 
           <!-- 目次（タップでビューアがそのページへ移動） -->
           <div class="note-toc">
@@ -789,6 +796,10 @@
 
             <button class="toc-row" type="button" data-goto="3">
               <span class="toc-label">11月16日 夜間面会</span>
+            </button>
+
+            <button class="toc-row" type="button" data-goto="4">
+              <span class="toc-label">11月18日 パパとママから</span>
             </button>
           </div>
         </section>
