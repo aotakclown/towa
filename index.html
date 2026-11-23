@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="PMn4TF7eW7o">
-    <meta name="app-build" content="33">
+    <meta name="app-build" content="34">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -172,7 +172,8 @@
       .tuesday-note + .latest { margin-top: 20px; }
 
       /* ── 期間限定のお知らせバナー ─────────── */
-      /* カード全体がボタン。タップで写真アルバムのビューへ遷移する。
+      /* カード全体がボタン。タップでメイン画面の写真アルバム欄へ
+         スムーズスクロールする。
          表示期間（2026-11-23〜25・日本時間）の判定はページ側スクリプトで行う */
       .album-news {
         display: block;
@@ -754,11 +755,11 @@
           <p class="lead"><span class="ph">26週2日、</span><span class="ph">859グラムで</span><span class="ph">生まれました。</span><br /><span class="ph">小さな小さな命が、</span><span class="ph">ゆっくりと元気に</span><span class="ph">成長していく姿を、</span><br /><span class="ph">見守ってください。</span></p>
         </header>
 
-        <!-- 期間限定のお知らせ（2026年11月23日〜25日だけ表示。タップで写真アルバムへ） -->
-        <button class="album-news" id="album-news" type="button" style="display:none" aria-label="写真アルバムを見る">
+        <!-- 期間限定のお知らせ（2026年11月23日〜25日だけ表示。タップでメイン画面の写真アルバム欄へスクロール） -->
+        <button class="album-news" id="album-news" type="button" style="display:none" aria-label="アルバムを見る">
           <span class="album-news-title">お知らせ</span>
-          <span class="album-news-body">写真アルバムができました。面会の日に撮った写真が見られます。</span>
-          <span class="album-news-link">写真アルバムを見る ›</span>
+          <span class="album-news-body">写真アルバムができました。面会の日にママが撮った写真が見られます。</span>
+          <span class="album-news-link">アルバムを見る ›</span>
         </button>
 
         <!-- 火曜日のお休みお知らせ（火曜日だけ表示） -->
@@ -845,9 +846,9 @@
           <div id="note-list">
             <!-- メイン画面には最新の1件だけを表示。過去分はノートページ（別ビュー）にあります -->
             <div class="note-entry">
-              <div class="note-date">11月18日 パパとママから</div>
-              <button class="note-photo-btn" type="button" aria-label="11月18日 パパとママからのノートを大きく見る">
-                <img data-notebook="2026-11-18" src="notebook/2026-11-18.jpg" alt="交換ノートのページ（11月18日 パパとママから）" width="960" height="1706" loading="lazy" />
+              <div class="note-date">11月22日 夜〜23日 朝</div>
+              <button class="note-photo-btn" type="button" aria-label="11月22日 夜〜23日 朝のノートを大きく見る">
+                <img data-notebook="2026-11-22-night" src="notebook/2026-11-22-night.jpg" alt="交換ノートのページ（11月22日 夜〜23日 朝）" width="960" height="1707" loading="lazy" />
               </button>
             </div>
           </div>
@@ -859,9 +860,9 @@
         </section>
 
         <!-- 写真アルバム -->
-        <section class="photo-section" aria-labelledby="photo-h">
+        <section class="photo-section" id="photo-section" aria-labelledby="photo-h">
           <h2 id="photo-h">写真アルバム</h2>
-          <p class="sec-note">面会の日に撮った写真です。会いに行くたびに、少しずつ増えていきます。</p>
+          <p class="sec-note">面会の日にママが撮った写真です。会いに行くたびに、少しずつ増えていきます。</p>
 
           <div id="photo-list">
             <!-- メイン画面には最新の1枚だけを表示。全枚はアルバムページ（別ビュー）にあります -->
@@ -974,6 +975,34 @@
                 <img data-notebook="2026-11-18" src="notebook/2026-11-18.jpg" alt="交換ノートのページ（11月18日 パパとママから）" width="960" height="1706" loading="lazy" />
               </button>
             </div>
+
+            <div class="note-page">
+              <div class="note-date">11月22日</div>
+              <button class="note-photo-btn" type="button" aria-label="11月22日のノートを大きく見る">
+                <img data-notebook="2026-11-22" src="notebook/2026-11-22.jpg" alt="交換ノートのページ（11月22日）" width="960" height="1706" loading="lazy" />
+              </button>
+            </div>
+
+            <div class="note-page">
+              <div class="note-date">栄養の記録・母乳のおはなし</div>
+              <button class="note-photo-btn" type="button" aria-label="栄養の記録・母乳のおはなしのノートを大きく見る">
+                <img data-notebook="2026-11-22-nutrition" src="notebook/2026-11-22-nutrition.jpg" alt="交換ノートのページ（栄養の記録・母乳のおはなし）" width="960" height="1707" loading="lazy" />
+              </button>
+            </div>
+
+            <div class="note-page">
+              <div class="note-date">光線療法のおはなし</div>
+              <button class="note-photo-btn" type="button" aria-label="光線療法のおはなしのノートを大きく見る">
+                <img data-notebook="2026-11-22-kosen" src="notebook/2026-11-22-kosen.jpg" alt="交換ノートのページ（光線療法のおはなし）" width="960" height="1707" loading="lazy" />
+              </button>
+            </div>
+
+            <div class="note-page">
+              <div class="note-date">11月22日 夜〜23日 朝</div>
+              <button class="note-photo-btn" type="button" aria-label="11月22日 夜〜23日 朝のノートを大きく見る">
+                <img data-notebook="2026-11-22-night" src="notebook/2026-11-22-night.jpg" alt="交換ノートのページ（11月22日 夜〜23日 朝）" width="960" height="1707" loading="lazy" />
+              </button>
+            </div>
           </div>
 
           <div class="pager-fade left" aria-hidden="true"></div>
@@ -983,7 +1012,7 @@
           <button class="pager-nav next" type="button" id="pager-next" aria-label="次のページへ">›</button>
           </div>
 
-          <p class="note-counter" id="note-counter" aria-live="polite">1 / 5</p>
+          <p class="note-counter" id="note-counter" aria-live="polite">1 / 9</p>
 
           <!-- 目次（タップでビューアがそのページへ移動） -->
           <div class="note-toc">
@@ -1012,6 +1041,22 @@
 
             <button class="toc-row" type="button" data-goto="4">
               <span class="toc-label">11月18日 パパとママから</span>
+            </button>
+
+            <button class="toc-row" type="button" data-goto="5">
+              <span class="toc-label">11月22日</span>
+            </button>
+
+            <button class="toc-row" type="button" data-goto="6">
+              <span class="toc-label">栄養の記録・母乳のおはなし</span>
+            </button>
+
+            <button class="toc-row" type="button" data-goto="7">
+              <span class="toc-label">光線療法のおはなし</span>
+            </button>
+
+            <button class="toc-row" type="button" data-goto="8">
+              <span class="toc-label">11月22日 夜〜23日 朝</span>
             </button>
           </div>
         </section>
@@ -1170,8 +1215,13 @@
         document.getElementById("close-notes").addEventListener("click", showMain);
         document.getElementById("close-notes-2").addEventListener("click", showMain);
         document.getElementById("open-photos").addEventListener("click", showPhotos);
+        /* お知らせバナーはビュー遷移ではなく、メイン画面の一番下にある
+           写真アルバム欄へスムーズスクロールする */
         var albumNews = document.getElementById("album-news");
-        if (albumNews) albumNews.addEventListener("click", showPhotos);
+        if (albumNews) albumNews.addEventListener("click", function () {
+          var target = document.getElementById("photo-section");
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
         document.getElementById("close-photos").addEventListener("click", showMain);
         document.getElementById("close-photos-2").addEventListener("click", showMain);
       })();
