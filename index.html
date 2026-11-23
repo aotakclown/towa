@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="mbxswGBPpBM">
-    <meta name="app-build" content="37">
+    <meta name="app-build" content="38">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -613,6 +613,10 @@
         overscroll-behavior-x: contain;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        /* カードを縦に引き伸ばさず、写真ごとの高さにする。
+           ビューア全体の高さは一番背の高い縦写真のカードで決まるので、
+           矢印チップとカウンターの位置は写真ごとにずれない */
+        align-items: center;
       }
       .photo-pager::-webkit-scrollbar { display: none; }
       .photo-page {
@@ -624,22 +628,28 @@
         border-radius: 18px;
         padding: 14px;
         box-shadow: var(--shadow);
-        /* 縦写真のページに合わせてビューア全体の高さが決まるため、
-           横写真はカードの縦中央に置き、矢印チップとカウンターの
-           位置が写真ごとにずれないようにする */
+        /* カード（枠）の形は、中の写真の縦横比に合わせる
+           （横写真なら横長のカード、縦写真なら縦長のカード）。
+           横写真のカードはビューアの高さの中で縦中央に置かれる */
         display: flex;
         flex-direction: column;
         justify-content: center;
       }
       .photo-page .note-photo-btn { margin-top: 0; }
-      /* ── 縦長の写真は枠の形を写真に合わせる ── */
-      /* 縦写真は横長写真の枠に小さく収めるのではなく、表示枠そのものを
-         写真の縦横比（1044×1566＝2:3）に合わせ、写真を大きく表示する。
-         写真自体がちょうど 2:3 なので cover でも切り取られる部分はない。
+      /* ── 写真の表示枠は、写真ごとの縦横比に合わせる ── */
+      /* 横長の写真（1566×1044＝3:2）は横長の枠、縦長の写真
+         （1044×1566＝2:3）は縦長の枠で表示する。クラスで写真ごとに
+         指定するので、枠の形が他の写真に引っ張られることはない。
+         写真と枠の縦横比が一致するため、object-fit: cover でも
+         写真が切り取られる部分はない。
          メイン画面の最新写真とアルバムのビューアの両方に効く。
-         拡大表示（ライトボックス）は元々、写真の縦横比のまま
+         拡大表示（ライトボックス）は元々、写真本来の縦横比のまま
          画面内に収まる表示になっている */
-      .note-photo-btn img.photo-fit {
+      .note-photo-btn img.photo-ar-l {
+        aspect-ratio: 3 / 2;
+        object-fit: cover;
+      }
+      .note-photo-btn img.photo-ar-p {
         aspect-ratio: 2 / 3;
         object-fit: cover;
       }
@@ -899,7 +909,7 @@
             <!-- メイン画面には最新の1枚だけを表示。全枚はアルバムページ（別ビュー）にあります -->
             <div class="photo-entry">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真を大きく見る">
-                <img class="photo-fit" data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日）" width="1044" height="1566" loading="lazy" />
+                <img class="photo-ar-p" data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日）" width="1044" height="1566" loading="lazy" />
               </button>
             </div>
           </div>
@@ -1011,7 +1021,10 @@
               </button>
             </div>
 
-            <div class="note-page">
+            <!-- data-latest-batch：直近の更新で増えたページ群の先頭の目印。
+                 「最新のノートを見る」ボタンはこのページへ飛ぶ。
+                 次にノートが増えたら、この目印を新しいバッチの先頭へ付け替える -->
+            <div class="note-page" data-latest-batch>
               <div class="note-date">11月22日</div>
               <button class="note-photo-btn" type="button" aria-label="11月22日のノートを大きく見る">
                 <img data-notebook="2026-11-22" src="notebook/2026-11-22.jpg" alt="交換ノートのページ（11月22日）" width="960" height="1706" loading="lazy" />
@@ -1118,37 +1131,37 @@
           <div class="photo-pager" id="photo-pager" role="group" aria-label="写真アルバムの写真">
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（1枚目）を大きく見る">
-                <img data-photo="2026-11-23-1" src="photos/2026-11-23-1.jpg" alt="面会のときに撮った写真（2026年11月23日・1枚目）" width="1566" height="1044" loading="lazy" />
+                <img class="photo-ar-l" data-photo="2026-11-23-1" src="photos/2026-11-23-1.jpg" alt="面会のときに撮った写真（2026年11月23日・1枚目）" width="1566" height="1044" loading="lazy" />
               </button>
             </div>
 
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（2枚目）を大きく見る">
-                <img data-photo="2026-11-23-2" src="photos/2026-11-23-2.jpg" alt="面会のときに撮った写真（2026年11月23日・2枚目）" width="1566" height="1044" loading="lazy" />
+                <img class="photo-ar-l" data-photo="2026-11-23-2" src="photos/2026-11-23-2.jpg" alt="面会のときに撮った写真（2026年11月23日・2枚目）" width="1566" height="1044" loading="lazy" />
               </button>
             </div>
 
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（3枚目）を大きく見る">
-                <img data-photo="2026-11-23-3" src="photos/2026-11-23-3.jpg" alt="面会のときに撮った写真（2026年11月23日・3枚目）" width="1566" height="1044" loading="lazy" />
+                <img class="photo-ar-l" data-photo="2026-11-23-3" src="photos/2026-11-23-3.jpg" alt="面会のときに撮った写真（2026年11月23日・3枚目）" width="1566" height="1044" loading="lazy" />
               </button>
             </div>
 
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（4枚目）を大きく見る">
-                <img data-photo="2026-11-23-4" src="photos/2026-11-23-4.jpg" alt="面会のときに撮った写真（2026年11月23日・4枚目）" width="1566" height="1044" loading="lazy" />
+                <img class="photo-ar-l" data-photo="2026-11-23-4" src="photos/2026-11-23-4.jpg" alt="面会のときに撮った写真（2026年11月23日・4枚目）" width="1566" height="1044" loading="lazy" />
               </button>
             </div>
 
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（5枚目）を大きく見る">
-                <img data-photo="2026-11-23-5" src="photos/2026-11-23-5.jpg" alt="面会のときに撮った写真（2026年11月23日・5枚目）" width="1566" height="1044" loading="lazy" />
+                <img class="photo-ar-l" data-photo="2026-11-23-5" src="photos/2026-11-23-5.jpg" alt="面会のときに撮った写真（2026年11月23日・5枚目）" width="1566" height="1044" loading="lazy" />
               </button>
             </div>
 
             <div class="photo-page" data-photo-date="2026-11-23">
               <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（6枚目）を大きく見る">
-                <img class="photo-fit" data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日・6枚目）" width="1044" height="1566" loading="lazy" />
+                <img class="photo-ar-p" data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日・6枚目）" width="1044" height="1566" loading="lazy" />
               </button>
             </div>
           </div>
@@ -1417,13 +1430,19 @@
     });
   }
 
-  /* 「最新のノートを見る」：常に一番最後のページへ移動する。
-     total はページ数から動的に求めるので、今後ページが増えても
-     その時点の最新ページへ飛ぶ。カウンターと目次ハイライトは
-     スクロールに連動する render() が更新する */
+  /* 「最新のノートを見る」：一番最後のページではなく、直近の更新で
+     増えたページ群の先頭（data-latest-batch の目印が付いたページ）へ
+     移動する。目印が無い場合は最後のページへ飛ぶ。
+     カウンターと目次ハイライトはスクロールに連動する render() が更新する */
   var latestBtn = document.getElementById("goto-latest-note");
   if (latestBtn) {
-    latestBtn.addEventListener("click", function () { goTo(total - 1); });
+    latestBtn.addEventListener("click", function () {
+      var idx = total - 1;
+      for (var b = 0; b < total; b++) {
+        if (pages[b].hasAttribute("data-latest-batch")) { idx = b; break; }
+      }
+      goTo(idx);
+    });
   }
 
   /* ノートページを開くたびに、先頭ページ（表紙）から表示する */
