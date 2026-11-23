@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="PMn4TF7eW7o">
-    <meta name="app-build" content="32">
+    <meta name="app-build" content="33">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -170,6 +170,45 @@
         color: var(--ink);
       }
       .tuesday-note + .latest { margin-top: 20px; }
+
+      /* ── 期間限定のお知らせバナー ─────────── */
+      /* カード全体がボタン。タップで写真アルバムのビューへ遷移する。
+         表示期間（2026-11-23〜25・日本時間）の判定はページ側スクリプトで行う */
+      .album-news {
+        display: block;
+        width: 100%;
+        margin-top: 28px;
+        background: var(--note-bg);
+        border: 1.5px solid var(--line);
+        border-radius: 18px;
+        padding: 20px 22px;
+        box-shadow: var(--shadow);
+        text-align: left;
+        cursor: pointer;
+        color: var(--ink);
+      }
+      .album-news:active { transform: scale(.99); }
+      .album-news-title {
+        display: inline-block;
+        background: var(--canary); color: var(--canary-ink);
+        font-weight: 900; font-size: 15px;
+        padding: 3px 14px; border-radius: 999px;
+        line-height: 1.5;
+      }
+      .album-news-body {
+        display: block;
+        margin-top: 10px;
+        font-weight: 700;
+        font-size: 17.5px;
+        line-height: 1.75;
+      }
+      .album-news-link {
+        display: inline-block;
+        margin-top: 8px;
+        color: var(--canary-deep);
+        font-weight: 900; font-size: 17px;
+        text-decoration: underline; text-underline-offset: 4px;
+      }
 
       /* ── 最新動画 ─────────────────────────── */
       .latest { margin-top: 28px; }
@@ -715,6 +754,13 @@
           <p class="lead"><span class="ph">26週2日、</span><span class="ph">859グラムで</span><span class="ph">生まれました。</span><br /><span class="ph">小さな小さな命が、</span><span class="ph">ゆっくりと元気に</span><span class="ph">成長していく姿を、</span><br /><span class="ph">見守ってください。</span></p>
         </header>
 
+        <!-- 期間限定のお知らせ（2026年11月23日〜25日だけ表示。タップで写真アルバムへ） -->
+        <button class="album-news" id="album-news" type="button" style="display:none" aria-label="写真アルバムを見る">
+          <span class="album-news-title">お知らせ</span>
+          <span class="album-news-body">写真アルバムができました。面会の日に撮った写真が見られます。</span>
+          <span class="album-news-link">写真アルバムを見る ›</span>
+        </button>
+
         <!-- 火曜日のお休みお知らせ（火曜日だけ表示） -->
         <div class="tuesday-note" id="tuesday-note" style="display:none" role="note">
           <p>火曜日は面会ができない日なので、動画はお休みです。<br />これまでの動画をたくさん見て、トワを応援してね。</p>
@@ -1124,6 +1170,8 @@
         document.getElementById("close-notes").addEventListener("click", showMain);
         document.getElementById("close-notes-2").addEventListener("click", showMain);
         document.getElementById("open-photos").addEventListener("click", showPhotos);
+        var albumNews = document.getElementById("album-news");
+        if (albumNews) albumNews.addEventListener("click", showPhotos);
         document.getElementById("close-photos").addEventListener("click", showMain);
         document.getElementById("close-photos-2").addEventListener("click", showMain);
       })();
@@ -1160,6 +1208,23 @@
     var wd = new Intl.DateTimeFormat("ja-JP", {timeZone: "Asia/Tokyo", weekday: "short"}).format(new Date());
     if (wd === "火") {
       var el = document.getElementById("tuesday-note");
+      if (el) el.style.display = "";
+    }
+  } catch(e) {}
+})();
+</script>
+<script>
+(function(){
+  /* ── お知らせバナーの表示期間（日本時間で2026年11月23日〜25日の3日間だけ） ── */
+  try {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit"
+    }).formatToParts(new Date());
+    var o = {};
+    for (var i = 0; i < parts.length; i++) o[parts[i].type] = parseInt(parts[i].value, 10);
+    var key = o.year * 10000 + o.month * 100 + o.day;
+    if (key >= 20261123 && key <= 20261125) {
+      var el = document.getElementById("album-news");
       if (el) el.style.display = "";
     }
   } catch(e) {}
