@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#fdf8ec" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#292016" media="(prefers-color-scheme: dark)" />
     <meta name="app-latest" content="uCmRiKCmCEo">
-    <meta name="app-build" content="42">
+    <meta name="app-build" content="44">
     <title>トワと、今日も。</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,8 +34,6 @@
            背景スケッチの上にメイン画面と同じ洗いが重なるため、
            紙テクスチャの平均色に洗いのクリームを合成した色に合わせる */
         --paper-fade: 239, 225, 205;
-        /* 写真アルバムのビューア両端フェードも、交換ノートと同じ紙色
-           （--paper-fade）を使う */
         --shadow: 0 10px 28px rgba(146, 110, 40, .13);
         /* 背景イラストの上に重ねる洗い（ウォッシュ）と文字のハロー */
         --wash-top: rgba(253, 248, 236, .26);
@@ -553,6 +551,8 @@
         box-shadow: var(--shadow);
       }
       .photo-entry .note-photo-btn { margin-top: 0; }
+      /* 最新の写真の日付ラベル（交換ノート欄の .note-date と同じ見せ方） */
+      .photo-entry .note-date { font-weight: 900; font-size: 18px; color: var(--canary-deep); margin-top: 12px; }
 
       /* ── 写真アルバムページ：戻るボタン ── */
       /* 交換ノートページと同じく、控えめな小さいサイズにする */
@@ -592,59 +592,53 @@
         transform: translateX(-50%);
         width: min(100vw, 1000px); height: auto;
       }
-      /* 背景の上に直接乗る文字（見出し・カウンター・目次）には、
+      /* 背景の上に直接乗る文字（見出し・日付見出し）には、
          交換ノートページと同じ柔らかいハローを付けて読みやすくする
-         （ビューアのカードやボタンは元々不透明な背景を持つので対象外） */
-      #view-photos h2, #view-photos .photo-counter,
-      #view-photos .toc-title, #view-photos .photo-toc-row {
+         （グリッドの写真やボタンは元々不透明な背景を持つので対象外） */
+      #view-photos h2, #view-photos .photo-date-head {
         text-shadow: 0 0 12px var(--halo), 0 1px 3px var(--halo);
       }
 
-      /* ── 写真アルバムページ：横めくりビューア ── */
-      /* 交換ノートのビューアと同じ操作感。背景は交換ノートと同じ
-         再生紙テクスチャ */
-      .photo-pager-wrap { position: relative; }
-      .photo-pager {
-        display: flex;
-        gap: 14px;
-        padding-inline: 8%;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        overscroll-behavior-x: contain;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        /* カードを縦に引き伸ばさず、写真ごとの高さにする。
-           ビューア全体の高さは一番背の高い縦写真のカードで決まるので、
-           矢印チップとカウンターの位置は写真ごとにずれない */
-        align-items: center;
+      /* ── 写真アルバムページ：日付グループごとのグリッド ── */
+      /* iPhoneの写真アプリ「ライブラリ」のような見え方にする。
+         横一列に3枚、写真同士の間隔はごく細く、各セルは正方形で
+         写真を object-fit: cover で敷き詰める（縦写真もサムネイル
+         では正方形に切り取る）。グリッドは .wrap の左右パディングを
+         打ち消して画面幅いっぱいに広げる */
+      .photo-grid-group { margin: 10px -18px 0; }
+      .photo-grid-group + .photo-grid-group { margin-top: 30px; }
+      .photo-date-head {
+        font-size: 20px; font-weight: 900;
+        letter-spacing: .02em;
+        margin: 0; padding: 0 18px 10px;
       }
-      .photo-pager::-webkit-scrollbar { display: none; }
-      .photo-page {
-        flex: 0 0 100%;
-        scroll-snap-align: center;
-        scroll-snap-stop: always;
-        background: var(--card);
-        border: 1.5px solid var(--line);
-        border-radius: 18px;
-        padding: 14px;
-        box-shadow: var(--shadow);
-        /* カード（枠）の形は、中の写真の縦横比に合わせる
-           （横写真なら横長のカード、縦写真なら縦長のカード）。
-           横写真のカードはビューアの高さの中で縦中央に置かれる */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+      .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
       }
-      .photo-page .note-photo-btn { margin-top: 0; }
+      .photo-cell {
+        display: block; width: 100%;
+        aspect-ratio: 1 / 1;
+        padding: 0; margin: 0;
+        border: none; background: var(--bg-soft);
+        cursor: pointer; overflow: hidden;
+      }
+      .photo-cell img {
+        display: block; width: 100%; height: 100%;
+        object-fit: cover;
+      }
+      .photo-cell:active { opacity: .82; }
       /* ── 写真の表示枠は、写真ごとの縦横比に合わせる ── */
       /* 横長の写真（1566×1044＝3:2）は横長の枠、縦長の写真
          （1044×1566＝2:3）は縦長の枠で表示する。クラスで写真ごとに
          指定するので、枠の形が他の写真に引っ張られることはない。
          写真と枠の縦横比が一致するため、object-fit: cover でも
          写真が切り取られる部分はない。
-         メイン画面の最新写真とアルバムのビューアの両方に効く。
-         拡大表示（ライトボックス）は元々、写真本来の縦横比のまま
-         画面内に収まる表示になっている */
+         メイン画面の最新写真に効く（アルバムのグリッドでは正方形の
+         セルに写真を敷き詰めるので、このクラスは使わない）。
+         拡大ビューは、写真本来の縦横比のまま画面内に収まる表示に
+         なっている */
       .note-photo-btn img.photo-ar-l {
         aspect-ratio: 3 / 2;
         object-fit: cover;
@@ -653,35 +647,57 @@
         aspect-ratio: 2 / 3;
         object-fit: cover;
       }
-      /* ビューア両端のフェード：ちら見え写真の切り口が紙の背景へ溶ける
-         （交換ノートと同じ --paper-fade を使う） */
-      .photo-fade {
-        position: absolute; top: 0; bottom: 0;
-        width: 13%;
-        z-index: 1;
-        pointer-events: none;
+      /* ── 写真アルバムページ：拡大ビュー ── */
+      /* グリッドの写真をタップすると開く。写真は本来の縦横比のまま
+         画面内に収まる大きさで表示し、左右スワイプ／矢印チップで
+         前後の写真へ移動できる。閉じるボタンでグリッドに戻る */
+      .photo-viewer {
+        position: fixed; inset: 0; z-index: 60;
+        background: rgba(32, 23, 10, .93);
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px 16px 88px;
       }
-      .photo-fade.left {
-        left: 0;
-        background: linear-gradient(to right,
-          rgba(var(--paper-fade), .94) 0%,
-          rgba(var(--paper-fade), .55) 45%,
-          rgba(var(--paper-fade), 0) 100%);
+      .photo-viewer img {
+        max-width: 100%; max-height: 100%;
+        object-fit: contain; border-radius: 10px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.45);
       }
-      .photo-fade.right {
-        right: 0;
-        background: linear-gradient(to left,
-          rgba(var(--paper-fade), .94) 0%,
-          rgba(var(--paper-fade), .55) 45%,
-          rgba(var(--paper-fade), 0) 100%);
+      /* 前へ／次へ矢印チップ（拡大ビューの左右端に重ねる円形ボタン） */
+      .pv-nav {
+        position: absolute; top: 50%; transform: translateY(-50%);
+        z-index: 2;
+        width: 46px; height: 46px; border-radius: 50%;
+        border: 1.5px solid var(--line);
+        background: var(--card);
+        color: var(--canary-deep);
+        font-size: 30px; font-weight: 900; line-height: 1;
+        display: grid; place-items: center;
+        padding: 0 0 4px;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        opacity: .92;
       }
-      /* ページカウンター（交換ノートと同じ控えめな体裁） */
-      .photo-counter {
-        text-align: center;
-        color: var(--ink-soft);
+      .pv-nav.prev { left: 10px; }
+      .pv-nav.next { right: 10px; }
+      .pv-nav:active { transform: translateY(-50%) scale(.94); }
+      .pv-nav[hidden] { display: none !important; }
+      /* 下部バー：左にカウンター、右に閉じるボタン */
+      .pv-bar {
+        position: absolute; left: 0; right: 0; bottom: 0;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px));
+      }
+      .pv-counter {
+        color: #f8ecd4;
         font-weight: 700; font-size: 15px;
         letter-spacing: .1em;
-        margin: 12px 0 0;
+      }
+      .pv-close {
+        background: var(--canary); color: var(--canary-ink);
+        border: none; cursor: pointer;
+        font-weight: 900; font-size: 17px;
+        padding: 10px 28px; border-radius: 999px;
+        min-height: 48px; display: inline-flex; align-items: center;
       }
 
       /* ── 写真アルバムページ：スライドショーボタン ── */
@@ -695,22 +711,6 @@
         box-shadow: 0 10px 24px rgba(199,143,20,.3);
       }
       .slideshow-btn:active { transform: scale(.98); }
-
-      /* ── 写真アルバムページ：目次（日付ごと） ── */
-      .photo-toc { margin-top: 32px; }
-      .photo-toc-row {
-        display: flex; align-items: center;
-        width: 100%; min-height: 48px;
-        padding: 8px 12px;
-        background: none;
-        border: none;
-        border-bottom: 1px solid var(--line);
-        border-radius: 8px;
-        cursor: pointer; text-align: left;
-        color: var(--ink); font-size: 17px; font-weight: 700;
-      }
-      .photo-toc-row:active { background: var(--note-bg); }
-      .photo-toc-row.is-current { background: var(--note-bg); color: var(--canary-deep); font-weight: 900; }
 
       /* ── 写真の拡大表示（ライトボックス） ── */
       .lightbox {
@@ -911,6 +911,8 @@
               <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真を大きく見る">
                 <img class="photo-ar-l" data-photo="2026-11-25-9" src="photos/2026-11-25-9.jpg" alt="面会のときに撮った写真（2026年11月25日）" width="1567" height="1045" loading="lazy" />
               </button>
+              <!-- 日付ラベル：表示文言は下部スクリプトが写真の data-photo から自動で合わせる -->
+              <div class="note-date" id="latest-photo-date">2026年11月25日</div>
             </div>
           </div>
 
@@ -1130,127 +1132,85 @@
             <button class="latest-note-btn" type="button" id="goto-latest-photo">最新の写真を見る</button>
           </div>
 
-          <!-- 横めくりビューア（古い順：1枚目 → 最新） -->
-          <div class="photo-pager-wrap">
-          <div class="photo-pager" id="photo-pager" role="group" aria-label="写真アルバムの写真">
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（1枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-23-1" src="photos/2026-11-23-1.jpg" alt="面会のときに撮った写真（2026年11月23日・1枚目）" width="1566" height="1044" loading="lazy" />
+          <!-- 日付グループごとのグリッド表示（古い日付が上、新しい日付が下）。
+               iPhoneの写真アプリ「ライブラリ」のように、横3列の正方形
+               サムネイルを縦にスクロールして見る。写真をタップすると
+               拡大ビューが開く -->
+          <div class="photo-grid-group">
+            <h3 class="photo-date-head">2026年11月23日</h3>
+            <div class="photo-grid">
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（1枚目）を大きく見る">
+                <img data-photo="2026-11-23-1" src="photos/2026-11-23-1.jpg" alt="面会のときに撮った写真（2026年11月23日・1枚目）" width="1566" height="1044" loading="lazy" />
               </button>
-            </div>
 
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（2枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-23-2" src="photos/2026-11-23-2.jpg" alt="面会のときに撮った写真（2026年11月23日・2枚目）" width="1566" height="1044" loading="lazy" />
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（2枚目）を大きく見る">
+                <img data-photo="2026-11-23-2" src="photos/2026-11-23-2.jpg" alt="面会のときに撮った写真（2026年11月23日・2枚目）" width="1566" height="1044" loading="lazy" />
               </button>
-            </div>
 
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（3枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-23-3" src="photos/2026-11-23-3.jpg" alt="面会のときに撮った写真（2026年11月23日・3枚目）" width="1566" height="1044" loading="lazy" />
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（3枚目）を大きく見る">
+                <img data-photo="2026-11-23-3" src="photos/2026-11-23-3.jpg" alt="面会のときに撮った写真（2026年11月23日・3枚目）" width="1566" height="1044" loading="lazy" />
               </button>
-            </div>
 
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（4枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-23-4" src="photos/2026-11-23-4.jpg" alt="面会のときに撮った写真（2026年11月23日・4枚目）" width="1566" height="1044" loading="lazy" />
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（4枚目）を大きく見る">
+                <img data-photo="2026-11-23-4" src="photos/2026-11-23-4.jpg" alt="面会のときに撮った写真（2026年11月23日・4枚目）" width="1566" height="1044" loading="lazy" />
               </button>
-            </div>
 
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（5枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-23-5" src="photos/2026-11-23-5.jpg" alt="面会のときに撮った写真（2026年11月23日・5枚目）" width="1566" height="1044" loading="lazy" />
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（5枚目）を大きく見る">
+                <img data-photo="2026-11-23-5" src="photos/2026-11-23-5.jpg" alt="面会のときに撮った写真（2026年11月23日・5枚目）" width="1566" height="1044" loading="lazy" />
               </button>
-            </div>
 
-            <div class="photo-page" data-photo-date="2026-11-23">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月23日の写真（6枚目）を大きく見る">
-                <img class="photo-ar-p" data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日・6枚目）" width="1044" height="1566" loading="lazy" />
-              </button>
-            </div>
-
-            <!-- data-latest-batch：直近の更新で増えた写真群の先頭の目印。
-                 「最新の写真を見る」ボタンはこの写真へ飛ぶ。
-                 次に写真が増えたら、この目印を新しいバッチの先頭へ付け替える -->
-            <div class="photo-page" data-photo-date="2026-11-25" data-latest-batch>
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（1枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-1" src="photos/2026-11-25-1.jpg" alt="面会のときに撮った写真（2026年11月25日・1枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（2枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-2" src="photos/2026-11-25-2.jpg" alt="面会のときに撮った写真（2026年11月25日・2枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（3枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-3" src="photos/2026-11-25-3.jpg" alt="面会のときに撮った写真（2026年11月25日・3枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（4枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-4" src="photos/2026-11-25-4.jpg" alt="面会のときに撮った写真（2026年11月25日・4枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（5枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-5" src="photos/2026-11-25-5.jpg" alt="面会のときに撮った写真（2026年11月25日・5枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（6枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-6" src="photos/2026-11-25-6.jpg" alt="面会のときに撮った写真（2026年11月25日・6枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（7枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-7" src="photos/2026-11-25-7.jpg" alt="面会のときに撮った写真（2026年11月25日・7枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（8枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-8" src="photos/2026-11-25-8.jpg" alt="面会のときに撮った写真（2026年11月25日・8枚目）" width="1567" height="1045" loading="lazy" />
-              </button>
-            </div>
-
-            <div class="photo-page" data-photo-date="2026-11-25">
-              <button class="note-photo-btn" type="button" aria-label="2026年11月25日の写真（9枚目）を大きく見る">
-                <img class="photo-ar-l" data-photo="2026-11-25-9" src="photos/2026-11-25-9.jpg" alt="面会のときに撮った写真（2026年11月25日・9枚目）" width="1567" height="1045" loading="lazy" />
+              <button class="photo-cell" type="button" aria-label="2026年11月23日の写真（6枚目）を大きく見る">
+                <img data-photo="2026-11-23-6" src="photos/2026-11-23-6.jpg" alt="面会のときに撮った写真（2026年11月23日・6枚目）" width="1044" height="1566" loading="lazy" />
               </button>
             </div>
           </div>
 
-          <div class="photo-fade left" aria-hidden="true"></div>
-          <div class="photo-fade right" aria-hidden="true"></div>
+          <div class="photo-grid-group">
+            <h3 class="photo-date-head">2026年11月25日</h3>
+            <div class="photo-grid">
+              <!-- data-latest-batch：直近の更新で増えた写真群の先頭の目印。
+                   「最新の写真を見る」ボタンはこの写真の位置へスクロールする。
+                   次に写真が増えたら、この目印を新しいバッチの先頭へ付け替える -->
+              <button class="photo-cell" type="button" data-latest-batch aria-label="2026年11月25日の写真（1枚目）を大きく見る">
+                <img data-photo="2026-11-25-1" src="photos/2026-11-25-1.jpg" alt="面会のときに撮った写真（2026年11月25日・1枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
 
-          <button class="pager-nav prev" type="button" id="photo-prev" aria-label="前の写真へ" hidden>‹</button>
-          <button class="pager-nav next" type="button" id="photo-next" aria-label="次の写真へ">›</button>
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（2枚目）を大きく見る">
+                <img data-photo="2026-11-25-2" src="photos/2026-11-25-2.jpg" alt="面会のときに撮った写真（2026年11月25日・2枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（3枚目）を大きく見る">
+                <img data-photo="2026-11-25-3" src="photos/2026-11-25-3.jpg" alt="面会のときに撮った写真（2026年11月25日・3枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（4枚目）を大きく見る">
+                <img data-photo="2026-11-25-4" src="photos/2026-11-25-4.jpg" alt="面会のときに撮った写真（2026年11月25日・4枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（5枚目）を大きく見る">
+                <img data-photo="2026-11-25-5" src="photos/2026-11-25-5.jpg" alt="面会のときに撮った写真（2026年11月25日・5枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（6枚目）を大きく見る">
+                <img data-photo="2026-11-25-6" src="photos/2026-11-25-6.jpg" alt="面会のときに撮った写真（2026年11月25日・6枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（7枚目）を大きく見る">
+                <img data-photo="2026-11-25-7" src="photos/2026-11-25-7.jpg" alt="面会のときに撮った写真（2026年11月25日・7枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（8枚目）を大きく見る">
+                <img data-photo="2026-11-25-8" src="photos/2026-11-25-8.jpg" alt="面会のときに撮った写真（2026年11月25日・8枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+
+              <button class="photo-cell" type="button" aria-label="2026年11月25日の写真（9枚目）を大きく見る">
+                <img data-photo="2026-11-25-9" src="photos/2026-11-25-9.jpg" alt="面会のときに撮った写真（2026年11月25日・9枚目）" width="1567" height="1045" loading="lazy" />
+              </button>
+            </div>
           </div>
-
-          <p class="photo-counter" id="photo-counter" aria-live="polite">1 / 15</p>
 
           <div class="slideshow-row">
             <button class="slideshow-btn" type="button" id="photo-slideshow">▶ スライドショー</button>
-          </div>
-
-          <!-- 目次（日付ごと。タップでその日の先頭の写真へ移動） -->
-          <div class="photo-toc">
-            <h3 class="toc-title">目次</h3>
-
-            <button class="photo-toc-row is-current" type="button" data-photo-goto="0" data-photo-date="2026-11-23">
-              <span class="toc-label">2026年11月23日</span>
-            </button>
-
-            <button class="photo-toc-row" type="button" data-photo-goto="6" data-photo-date="2026-11-25">
-              <span class="toc-label">2026年11月25日</span>
-            </button>
           </div>
         </section>
 
@@ -1265,6 +1225,17 @@
     <div class="lightbox" id="note-lightbox" hidden role="dialog" aria-modal="true" aria-label="交換ノートの拡大表示">
       <img id="note-lightbox-img" alt="" />
       <span class="lightbox-close">閉じる</span>
+    </div>
+
+    <!-- 写真アルバムの拡大表示（グリッドの写真タップ／スライドショーで開く） -->
+    <div class="photo-viewer" id="photo-viewer" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+      <img id="photo-viewer-img" alt="" />
+      <button class="pv-nav prev" type="button" id="photo-viewer-prev" aria-label="前の写真へ" hidden>‹</button>
+      <button class="pv-nav next" type="button" id="photo-viewer-next" aria-label="次の写真へ">›</button>
+      <div class="pv-bar">
+        <span class="pv-counter" id="photo-viewer-counter" aria-live="polite">1 / 15</span>
+        <button class="pv-close" type="button" id="photo-viewer-close">閉じる</button>
+      </div>
     </div>
 
     <script>
@@ -1525,53 +1496,49 @@
 </script>
 <script>
 (function(){
-  /* ── 写真アルバムページ：横めくりビューアのカウンター・矢印・目次・スライドショー ── */
-  var pager = document.getElementById("photo-pager");
-  var counter = document.getElementById("photo-counter");
-  if (!pager || !counter) return;
-  var pages = pager.querySelectorAll(".photo-page");
-  var total = pages.length;
-  var rows = document.querySelectorAll(".photo-toc-row");
-  var prevBtn = document.getElementById("photo-prev");
-  var nextBtn = document.getElementById("photo-next");
+  /* ── 写真アルバムページ：グリッド・拡大ビュー・スライドショー ── */
+  /* グリッドの写真（.photo-cell）は表示順＝古い順に並んでいる。
+     タップで拡大ビューが開き、左右スワイプ／矢印で前後へ移動できる */
+  var cells = document.querySelectorAll("#view-photos .photo-cell");
+  var viewer = document.getElementById("photo-viewer");
+  var viewerImg = document.getElementById("photo-viewer-img");
+  var counter = document.getElementById("photo-viewer-counter");
+  var prevBtn = document.getElementById("photo-viewer-prev");
+  var nextBtn = document.getElementById("photo-viewer-next");
+  var closeBtn = document.getElementById("photo-viewer-close");
   var slideBtn = document.getElementById("photo-slideshow");
+  if (!cells.length || !viewer || !viewerImg) return;
+  var total = cells.length;
+  var idx = 0;
 
-  /* 1枚分の移動量＝写真幅＋写真間の余白 */
-  function pageStep() {
-    if (!pages.length) return pager.clientWidth || 1;
-    var gap = parseFloat(getComputedStyle(pager).columnGap) || 0;
-    return pages[0].offsetWidth + gap;
+  function render() {
+    var img = cells[idx].querySelector("img");
+    if (!img) return;
+    viewerImg.src = img.currentSrc || img.src;
+    viewerImg.alt = img.alt;
+    if (counter) counter.textContent = (idx + 1) + " / " + total;
+    /* 矢印チップ：最初の写真では前へ、最後の写真では次へを隠す */
+    if (prevBtn) prevBtn.hidden = (idx === 0);
+    if (nextBtn) nextBtn.hidden = (idx === total - 1);
   }
-  function currentIndex() {
-    var i = Math.round(pager.scrollLeft / pageStep());
+  function openViewer(i) {
+    idx = i;
+    render();
+    viewer.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+  function closeViewer() {
+    stopSlideshow();
+    viewer.hidden = true;
+    viewerImg.src = "";
+    document.body.style.overflow = "";
+  }
+  function goTo(i) {
     if (i < 0) i = 0;
     if (i > total - 1) i = total - 1;
-    return i;
+    idx = i;
+    render();
   }
-  function goTo(idx) {
-    if (idx < 0) idx = 0;
-    if (idx > total - 1) idx = total - 1;
-    pager.scrollTo({ left: idx * pageStep(), behavior: "smooth" });
-  }
-  function render() {
-    var i = currentIndex();
-    counter.textContent = (i + 1) + " / " + total;
-    /* 目次は、今見ている写真の日付の行をハイライト */
-    var curDate = pages[i] ? pages[i].getAttribute("data-photo-date") : "";
-    for (var j = 0; j < rows.length; j++) {
-      if (rows[j].getAttribute("data-photo-date") === curDate) rows[j].classList.add("is-current");
-      else rows[j].classList.remove("is-current");
-    }
-    /* 矢印チップ：最初の写真では前へ、最後の写真では次へを隠す */
-    if (prevBtn) prevBtn.hidden = (i === 0);
-    if (nextBtn) nextBtn.hidden = (i === total - 1);
-  }
-  var ticking = false;
-  pager.addEventListener("scroll", function () {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () { ticking = false; render(); });
-  }, { passive: true });
 
   /* ── スライドショー（約3.5秒ごとに次の写真へ。最後で止まる） ── */
   var slideTimer = null;
@@ -1580,80 +1547,94 @@
       clearInterval(slideTimer);
       slideTimer = null;
     }
-    if (slideBtn) slideBtn.textContent = "▶ スライドショー";
   }
   function startSlideshow() {
-    /* 最後の写真にいる場合は先頭から再生する */
-    if (currentIndex() >= total - 1) goTo(0);
-    if (slideBtn) slideBtn.textContent = "⏸ とめる";
+    /* 先頭の写真から、拡大ビューで自動再生する */
+    openViewer(0);
     slideTimer = setInterval(function () {
-      var i = currentIndex();
-      if (i >= total - 1) { stopSlideshow(); return; }
-      goTo(i + 1);
-      /* 次が最後の写真なら、その表示をもって自動再生を終える */
-      if (i + 1 >= total - 1) {
-        setTimeout(function () {
-          if (slideTimer !== null && currentIndex() >= total - 1) stopSlideshow();
-        }, 700);
-      }
+      if (idx >= total - 1) { stopSlideshow(); return; }
+      goTo(idx + 1);
     }, 3500);
   }
   if (slideBtn) {
     slideBtn.addEventListener("click", function () {
-      if (slideTimer !== null) stopSlideshow();
-      else startSlideshow();
-    });
-  }
-  /* 手動でスワイプしたら自動再生は止める */
-  pager.addEventListener("pointerdown", stopSlideshow);
-  pager.addEventListener("touchstart", stopSlideshow, { passive: true });
-  pager.addEventListener("wheel", stopSlideshow, { passive: true });
-
-  /* 矢印チップをタップしても1枚ずつ進む／戻る（手動操作なので再生は止める） */
-  if (prevBtn) prevBtn.addEventListener("click", function () { stopSlideshow(); goTo(currentIndex() - 1); });
-  if (nextBtn) nextBtn.addEventListener("click", function () { stopSlideshow(); goTo(currentIndex() + 1); });
-
-  /* 目次をタップしたら、その日の先頭の写真までビューアをスクロール */
-  for (var k = 0; k < rows.length; k++) {
-    rows[k].addEventListener("click", function () {
       stopSlideshow();
-      goTo(parseInt(this.getAttribute("data-photo-goto"), 10) || 0);
+      startSlideshow();
     });
   }
+
+  /* グリッドの写真をタップしたら、その写真の拡大ビューを開く */
+  for (var i = 0; i < cells.length; i++) {
+    (function (n) {
+      cells[n].addEventListener("click", function () {
+        stopSlideshow();
+        openViewer(n);
+      });
+    })(i);
+  }
+
+  /* 矢印チップで前後へ（手動操作なので自動再生は止める） */
+  if (prevBtn) prevBtn.addEventListener("click", function () { stopSlideshow(); goTo(idx - 1); });
+  if (nextBtn) nextBtn.addEventListener("click", function () { stopSlideshow(); goTo(idx + 1); });
+  if (closeBtn) closeBtn.addEventListener("click", closeViewer);
+
+  /* 左右スワイプでも前後へ移動できる（手動操作なので自動再生は止める） */
+  var touchX = null;
+  viewer.addEventListener("touchstart", function (e) {
+    if (e.changedTouches && e.changedTouches.length) touchX = e.changedTouches[0].clientX;
+  }, { passive: true });
+  viewer.addEventListener("touchend", function (e) {
+    if (touchX === null || !e.changedTouches || !e.changedTouches.length) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) < 40) return;
+    stopSlideshow();
+    goTo(idx + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+
+  /* キーボード操作（Escapeで閉じる、矢印キーで前後へ） */
+  document.addEventListener("keydown", function (e) {
+    if (viewer.hidden) return;
+    if (e.key === "Escape") closeViewer();
+    else if (e.key === "ArrowLeft") { stopSlideshow(); goTo(idx - 1); }
+    else if (e.key === "ArrowRight") { stopSlideshow(); goTo(idx + 1); }
+  });
 
   /* 「最新の写真を見る」：一番最後の写真ではなく、直近の更新で
-     増えた写真群の先頭（data-latest-batch の目印が付いた写真）へ
-     移動する。目印が無い場合は最後の写真へ飛ぶ。
-     カウンターと目次ハイライトはスクロールに連動する render() が更新する */
+     増えた写真群の先頭（data-latest-batch の目印が付いた写真）の
+     位置へグリッドをスムーズスクロールする。目印が無い場合は
+     最後の写真へ飛ぶ */
   var latestPhotoBtn = document.getElementById("goto-latest-photo");
   if (latestPhotoBtn) {
     latestPhotoBtn.addEventListener("click", function () {
-      stopSlideshow();
-      var idx = total - 1;
+      var target = cells[total - 1];
       for (var b = 0; b < total; b++) {
-        if (pages[b].hasAttribute("data-latest-batch")) { idx = b; break; }
+        if (cells[b].hasAttribute("data-latest-batch")) { target = cells[b]; break; }
       }
-      goTo(idx);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }
 
-  /* アルバムページを開くたびに、先頭の写真から表示し、再生は止めておく */
-  var openBtn = document.getElementById("open-photos");
-  if (openBtn) {
-    openBtn.addEventListener("click", function () {
-      stopSlideshow();
-      requestAnimationFrame(function () {
-        pager.scrollLeft = 0;
-        render();
-      });
-    });
-  }
   /* メイン画面へ戻ったら再生は止める */
   var closeBtns = [document.getElementById("close-photos"), document.getElementById("close-photos-2")];
   for (var c = 0; c < closeBtns.length; c++) {
     if (closeBtns[c]) closeBtns[c].addEventListener("click", stopSlideshow);
   }
-  render();
+})();
+</script>
+<script>
+(function(){
+  /* ── メイン画面「最新の写真」の日付ラベル ── */
+  /* 最新の写真の img の data-photo（例：2026-11-25-9）から日付を取り出し、
+     ラベルを「2026年11月25日」の形に合わせる。写真が新しい日付のものに
+     差し替われば（data-photo が変われば）、ラベルも自動でその日付に追随する。
+     形式が読み取れない場合は、HTMLに書かれたラベルをそのまま使う */
+  var label = document.getElementById("latest-photo-date");
+  var img = document.querySelector("#photo-list .photo-entry img[data-photo]");
+  if (!label || !img) return;
+  var m = /^(\d{4})-(\d{1,2})-(\d{1,2})-/.exec(img.getAttribute("data-photo") || "");
+  if (!m) return;
+  label.textContent = parseInt(m[1], 10) + "年" + parseInt(m[2], 10) + "月" + parseInt(m[3], 10) + "日";
 })();
 </script>
   </body>
